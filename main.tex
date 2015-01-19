@@ -1,21 +1,21 @@
 \documentclass{article}
+\usepackage{fontspec}
 
-\title{Variable Bit Rate}
+\title{Variable bit rate MPEG video implementation for drone applications}
 \author{Martin Madsen, Alexander Brandi, Christian Laustsen}
-\date{January 2015}
+\date{\today}
 
 \begin{document}
 
 \maketitle
 
-\section{Problemformulering}
-Drone applikation der kan håndtere en variabel enkodning af video.\\
-
-\noindent Hvordan håndteres dette i et given
-kommunikationssystem med en variabel dataforbindelse.
-Analyse af problemet og mulig perspektivering til andre systemer
+\section{Problem}
+\subsection{Formulation}
+Streaming video from a drone application, with a varying signal can pose a problem when it comes to efficiency of video quality. How is this handled in a given communication system, with a variable data bit rate?
 
 
+\subsection{Description}
+Analyse how, and when, to handle varying bit rates in a streaming service (in this case, from drone to client), and how one can handle these cases in an optimal way. The analysis will be implemented as a prototype that will show one way to solve this problem.
 
 
 \end{document}
