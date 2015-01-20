@@ -1,5 +1,9 @@
 #!/usr/bin/env python2.7
 """
+Connect to a broadcast stream, and display the video feed, using the
+StreamerClient class. It automatically detects the resolution used, from
+the servers synchronization frames.
+
 The script uses two libraries that is not included in the standard
 libraries. The first is OpenCV[0] (Intel Open Source Computer Vision Library) 
 and the second is numpy[1], which is used in OpenCV.
