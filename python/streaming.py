@@ -46,7 +46,7 @@ class StreamerServer(threading.Thread):
         self.loop()
         run_time = time.time() - start_time
         self.output_statistics(run_time)
-        #self.cleanup()
+        self.cleanup()
     
     def stop(self):
         """Notify the streamer to stop."""
