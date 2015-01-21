@@ -12,13 +12,15 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
+
 import org.bytedeco.javacv.FFmpegFrameRecorder;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class MainActivity extends Activity implements SurfaceHolder.Callback, Camera.PreviewCallback {
 
-    private static String DEBUG_TAG = "DroneStreamer";
+    public static String DEBUG_TAG = "DroneStreamer";
     private static int CAMERA_ID = -1;
 
     private OrientationEventListener orientationListener = null;
@@ -54,6 +56,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback, Ca
         Button buttonStartCameraPreview = (Button)findViewById(R.id.startcamerapreview);
         Button buttonStopCameraPreview = (Button)findViewById(R.id.stopcamerapreview);
         Button buttonSwitchCameraPreview = (Button)findViewById(R.id.switchcamera);
+        Button buttonSendPacket = (Button)findViewById(R.id.sendpacket);
 
         getWindow().setFormat(PixelFormat.UNKNOWN);
         surfaceView = (SurfaceView)findViewById(R.id.surfaceview);
@@ -128,6 +131,14 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback, Ca
             }
         });
 
+        buttonSendPacket.setOnClickListener(new Button.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                new UDPsender().execute("LOL".getBytes());
+            }
+        });
+
     }
 
     @Override
@@ -177,6 +188,18 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback, Ca
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
         /* get video data */
-        Log.d(DEBUG_TAG, data.toString());
+        int x = 62208;  // chunk size
+        int len = data.length;
+        int counter = 0;
+
+        /*
+        for (int i = 0; i < len - x + 1; i += x){
+            new UDPsender().execute(Arrays.copyOfRange(data, i, i + x));
+            if (len % x != 0)
+                new UDPsender().execute(Arrays.copyOfRange(data, len - len % x, len));
+        }
+        */
+        new UDPsender().execute(Arrays.copyOfRange(data, 0, x));
+        Log.v(DEBUG_TAG, String.format("Data (length: %d): %s", data.length, data.toString()));
     }
 }
