@@ -177,10 +177,10 @@ class StreamerClient(threading.Thread):
     
 
 if __name__=='__main__':
-    print 'Setting up connection...'
     # Use the following codecs: 
     #   MPEG-4 : fmp4 (ffmpeg), xvid 
     #   MPEG-1 : mpeg
-    streamer_client = StreamerClient(output_file='mpeg/160x90.avi', output_format='mpeg')
+    print 'Setting up connection...'
+    streamer_client = StreamerClient(output_file='TestVideoData/output.avi', output_format='xvid')
     print 'Beginning to listen for data...'
     streamer_client.run()
