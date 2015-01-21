@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -14,9 +15,9 @@ import android.widget.Button;
 
 import java.io.IOException;
 
-public class MainActivity extends Activity implements SurfaceHolder.Callback {
+public class MainActivity extends Activity implements SurfaceHolder.Callback, Camera.PreviewCallback {
 
-    private static String DEBUG_TAG = "Drone Streamer";
+    private static String DEBUG_TAG = "DroneStreamer";
     private static int CAMERA_ID = -1;
 
     private OrientationEventListener orientationListener = null;
@@ -99,6 +100,8 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
             public void onClick(View v) {
                 if (previewing) {
                     camera.stopPreview();
+                } else {
+                    return;
                 }
 //NB: if you don't release the current camera before switching, you app will crash
                 camera.release();
@@ -165,5 +168,10 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
             result = (info.orientation - degrees + 360) % 360;
         }
         camera.setDisplayOrientation(result);
+    }
+
+    @Override
+    public void onPreviewFrame(byte[] data, Camera camera) {
+        Log.v(DEBUG_TAG,data.toString());
     }
 }
