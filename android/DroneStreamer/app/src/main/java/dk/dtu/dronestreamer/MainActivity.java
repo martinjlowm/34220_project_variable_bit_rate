@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -18,7 +17,7 @@ import java.io.IOException;
 public class MainActivity extends Activity implements SurfaceHolder.Callback {
 
     private static String DEBUG_TAG = "Drone Streamer";
-    private static int CAMERA_ID = 1;
+    private static int CAMERA_ID = -1;
 
     private OrientationEventListener orientationListener = null;
 
@@ -36,7 +35,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CONTEXT = getApplicationContext();
-        CAMERA_ID = getFrontFaceCam();
+        CAMERA_ID = Camera.CameraInfo.CAMERA_FACING_BACK;
 
         setContentView(R.layout.activity_main);
 
@@ -122,23 +121,6 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
             }
         });
 
-    }
-
-
-
-    public static int getFrontFaceCam(){
-        int cameraId = -1;
-        int numberOfCameras = Camera.getNumberOfCameras();
-        for (int i = 0; i < numberOfCameras; i++) {
-            Camera.CameraInfo info = new Camera.CameraInfo();
-            Camera.getCameraInfo(i, info);
-            if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-                Log.d(DEBUG_TAG, "Camera found");
-                cameraId = i;
-                break;
-            }
-        }
-        return cameraId;
     }
 
     @Override
