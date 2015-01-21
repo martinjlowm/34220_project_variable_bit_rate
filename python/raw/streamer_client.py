@@ -79,7 +79,7 @@ class StreamerClient(threading.Thread):
         start_time = time.time()
         current_start_time = time.time()
         current_frames_received = 0
-        while not self.halt and (time.time() - current_start_time) < 10:
+        while not self.halt:
             # Collect data until we have a full frame.
             tmp_data = self.sock.recv(self.chunk_length)
             data += tmp_data
@@ -181,6 +181,7 @@ if __name__=='__main__':
     #   MPEG-4 : fmp4 (ffmpeg), xvid 
     #   MPEG-1 : mpeg
     print 'Setting up connection...'
-    streamer_client = StreamerClient(output_file='TestVideoData/output.avi', output_format='xvid')
+    #streamer_client = StreamerClient(output_file='TestVideoData/output.avi', output_format='xvid')
+    streamer_client = StreamerClient()
     print 'Beginning to listen for data...'
     streamer_client.run()

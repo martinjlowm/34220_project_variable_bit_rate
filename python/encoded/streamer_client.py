@@ -79,7 +79,7 @@ class StreamerClient(threading.Thread):
         start_time = time.time()
         current_start_time = time.time()
         current_frames_received = 0
-        while not self.halt and (time.time() - current_start_time) < 10:
+        while not self.halt:
             # Collect data until we have a full frame.
             tmp_data = self.sock.recv(self.chunk_length)
             data += tmp_data
