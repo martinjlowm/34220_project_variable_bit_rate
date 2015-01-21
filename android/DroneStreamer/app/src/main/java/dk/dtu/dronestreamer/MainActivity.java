@@ -1,22 +1,33 @@
 package dk.dtu.dronestreamer;
 
-import java.io.IOException;
-
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.OrientationEventListener;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 
+import java.io.IOException;
+
 public class MainActivity extends Activity implements SurfaceHolder.Callback {
+
+    private static String DEBUG_TAG = "Drone Streamer";
+    private static int CAMERA_ID = 1;
+
+    private OrientationEventListener orientationListener = null;
+
+    private static Context CONTEXT;
 
     Camera camera;
     SurfaceView surfaceView;
     SurfaceHolder surfaceHolder;
-    boolean previewing = false;;
+    boolean previewing = false;
 
     String stringPath = "/sdcard/samplevideo.3gp";
 
@@ -24,10 +35,22 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        CONTEXT = getApplicationContext();
+        CAMERA_ID = getFrontFaceCam();
+
         setContentView(R.layout.activity_main);
+
+        orientationListener = new OrientationEventListener(this) {
+            public void onOrientationChanged(int orientation) {
+                if (previewing) {
+                    setCameraDisplayOrientation(MainActivity.this, CAMERA_ID, camera);
+                }
+            }
+        };
 
         Button buttonStartCameraPreview = (Button)findViewById(R.id.startcamerapreview);
         Button buttonStopCameraPreview = (Button)findViewById(R.id.stopcamerapreview);
+        Button buttonSwitchCameraPreview = (Button)findViewById(R.id.switchcamera);
 
         getWindow().setFormat(PixelFormat.UNKNOWN);
         surfaceView = (SurfaceView)findViewById(R.id.surfaceview);
@@ -41,9 +64,10 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
             public void onClick(View v) {
                 // TODO Auto-generated method stub
                 if(!previewing){
-                    camera = Camera.open();
+                    camera = Camera.open(CAMERA_ID);
                     if (camera != null){
                         try {
+                            setCameraDisplayOrientation(MainActivity.this, CAMERA_ID, camera);
                             camera.setPreviewDisplay(surfaceHolder);
                             camera.startPreview();
                             previewing = true;
@@ -53,7 +77,8 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
                         }
                     }
                 }
-            }});
+            }
+        });
 
         buttonStopCameraPreview.setOnClickListener(new Button.OnClickListener(){
 
@@ -67,28 +92,96 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 
                     previewing = false;
                 }
-            }});
+            }
+        });
+
+        buttonSwitchCameraPreview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (previewing) {
+                    camera.stopPreview();
+                }
+//NB: if you don't release the current camera before switching, you app will crash
+                camera.release();
+
+//swap the id of the camera to be used
+                if (CAMERA_ID == Camera.CameraInfo.CAMERA_FACING_BACK) {
+                    CAMERA_ID = Camera.CameraInfo.CAMERA_FACING_FRONT;
+                } else {
+                    CAMERA_ID = Camera.CameraInfo.CAMERA_FACING_BACK;
+                }
+                camera = Camera.open(CAMERA_ID);
+
+                setCameraDisplayOrientation(MainActivity.this, CAMERA_ID, camera);
+                try {
+                    camera.setPreviewDisplay(surfaceHolder);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                camera.startPreview();
+            }
+        });
 
     }
 
 
 
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width,
-                               int height) {
-        // TODO Auto-generated method stub
-
+    public static int getFrontFaceCam(){
+        int cameraId = -1;
+        int numberOfCameras = Camera.getNumberOfCameras();
+        for (int i = 0; i < numberOfCameras; i++) {
+            Camera.CameraInfo info = new Camera.CameraInfo();
+            Camera.getCameraInfo(i, info);
+            if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                Log.d(DEBUG_TAG, "Camera found");
+                cameraId = i;
+                break;
+            }
+        }
+        return cameraId;
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        // TODO Auto-generated method stub
+        orientationListener.enable();
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        // TODO Auto-generated method stub
+        orientationListener.disable();
+    }
 
+
+    public static void setCameraDisplayOrientation(Activity activity,
+                                                   int cameraId, android.hardware.Camera camera) {
+
+        android.hardware.Camera.CameraInfo info =
+                new android.hardware.Camera.CameraInfo();
+
+        android.hardware.Camera.getCameraInfo(cameraId, info);
+
+        int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+        int degrees = 0;
+
+        switch (rotation) {
+            case Surface.ROTATION_0: degrees = 0; break;
+            case Surface.ROTATION_90: degrees = 90; break;
+            case Surface.ROTATION_180: degrees = 180; break;
+            case Surface.ROTATION_270: degrees = 270; break;
+        }
+
+        int result;
+        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            result = (info.orientation + degrees) % 360;
+            result = (360 - result) % 360;  // compensate the mirror
+        } else {  // back-facing
+            result = (info.orientation - degrees + 360) % 360;
+        }
+        camera.setDisplayOrientation(result);
     }
 }
