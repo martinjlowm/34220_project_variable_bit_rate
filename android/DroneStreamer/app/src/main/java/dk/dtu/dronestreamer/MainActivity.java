@@ -12,6 +12,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
+import org.bytedeco.javacv.FFmpegFrameRecorder;
 
 import java.io.IOException;
 
@@ -28,6 +29,8 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback, Ca
     SurfaceView surfaceView;
     SurfaceHolder surfaceHolder;
     boolean previewing = false;
+
+    private volatile FFmpegFrameRecorder recorder;
 
     String stringPath = "/sdcard/samplevideo.3gp";
 
@@ -69,6 +72,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback, Ca
                         try {
                             setCameraDisplayOrientation(MainActivity.this, CAMERA_ID, camera);
                             camera.setPreviewDisplay(surfaceHolder);
+                            camera.setPreviewCallback(MainActivity.this);
                             camera.startPreview();
                             previewing = true;
                         } catch (IOException e) {
@@ -172,6 +176,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback, Ca
 
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
-        Log.v(DEBUG_TAG,data.toString());
+        /* get video data */
+        Log.d(DEBUG_TAG, data.toString());
     }
 }
