@@ -21,7 +21,7 @@ import threading
 
 
 class StreamerClient(threading.Thread):
-    def __init__(self):
+    def __init__(self, output_file=None, output_size=None, output_format=None):
         """Set up the initial variables and constants."""
         super(StreamerClient, self).__init__()
         # Constants
@@ -36,11 +36,25 @@ class StreamerClient(threading.Thread):
         self.height = 0
         self.received_frames = 0
         self.halt = False
+        self.output_file = output_file
+        if output_size is None:
+            self.output_size = (1280, 720)
+        else:
+            self.output_size = output_size
+        if output_format is None:
+            self.output_format = cv2.VideoWriter_fourcc(*'mpeg')
+        else:
+            self.output_format = cv2.VideoWriter_fourcc(*output_format)
+        self.fps = 20
+        self.video_writer = None
         
     def run(self):
         """Setup the socket, and run the main loop. When the loop stops, print statistics."""
         self.sock = self.set_up_socket()
-        cv2.namedWindow('Video Preview')
+        if self.output_file is None:
+            cv2.namedWindow('Video Preview')
+        else:
+            self.video_writer = cv2.VideoWriter(self.output_file, self.output_format, self.fps, self.output_size)
         start_time = time.time()
         self.loop()
         run_time = time.time() - start_time
@@ -55,6 +69,8 @@ class StreamerClient(threading.Thread):
         """Close and free various resources."""
         self.sock.close()
         cv2.destroyAllWindows()
+        if self.video_writer is not None:
+            self.video_writer.release()
     
     def loop(self):
         """Continiously read from the data stream, and display the video data."""
@@ -63,7 +79,7 @@ class StreamerClient(threading.Thread):
         start_time = time.time()
         current_start_time = time.time()
         current_frames_received = 0
-        while not self.halt:
+        while not self.halt and (time.time() - current_start_time) < 10:
             # Collect data until we have a full frame.
             tmp_data = self.sock.recv(self.chunk_length)
             data += tmp_data
@@ -79,22 +95,33 @@ class StreamerClient(threading.Thread):
                 # The server is closing the connection.
                 print 'Received kill frame...'
                 self.halt = True
-            else:
+            elif self.width != 0 and self.height != 0:
                 data_received += self.chunk_length
                 # When we've received a frame or more (because of zero padding), 
                 # then we can finally show it.
                 if data_received >= self.full_frame_length():
                     data = data[:self.full_frame_length()]
                     frame = self.data_to_frame(data)
-                    # Display the frame.
-                    cv2.imshow('Video Preview', frame)
-                    cv2.waitKey(10)
+                    if self.output_file is None:
+                        self.show_video_image(frame)
+                    else:
+                        self.write_video_image(frame)
+                    # Update statistics
                     self.received_frames += 1
                     current_frames_received += 1
                     self.output_statistics_during(start_time, current_start_time, current_frames_received)
                     # Reset the values after we've received the whole frame.
                     data_received = 0
                     data = ''
+    
+    def show_video_image(self, frame):
+        """Displays the frame, using OpenCVs window."""
+        cv2.imshow('Video Preview', frame)
+        cv2.waitKey(10)
+    
+    def write_video_image(self, frame):
+        frame = cv2.resize(frame, self.output_size)
+        self.video_writer.write(frame)
     
     def data_to_frame(self, data):
         """Convert the data from a string, to a numpy matrix."""
@@ -108,7 +135,7 @@ class StreamerClient(threading.Thread):
         resolution = '%sx%s' % (self.width, self.height,)
         MBps_per_frame = self.full_frame_length() / 1000.0 / 1000.0
         fps = current_frames_received / cur_time
-        print '\x1b[1A' + '\x1b[2K' + 'Res: %s, Total - Time: %.2fs, Frames: %s :: Current - Time: %.2fs, Frames: %s, FPS: %.2f, MBps: %s' % (
+        print '\x1b[1A' + '\x1b[2K' + 'Res: %s, Total - Time: %.2fs, Frames: %s :: Current - Time: %.2fs, Frames: %s, FPS: %.2f, MBps: %.2f' % (
             resolution,
             run_time,
             self.received_frames,
@@ -151,6 +178,9 @@ class StreamerClient(threading.Thread):
 
 if __name__=='__main__':
     print 'Setting up connection...'
-    streamer_client = StreamerClient()
+    # Use the following codecs: 
+    #   MPEG-4 : fmp4 (ffmpeg), xvid 
+    #   MPEG-1 : mpeg
+    streamer_client = StreamerClient(output_file='mpeg/160x90.avi', output_format='mpeg')
     print 'Beginning to listen for data...'
     streamer_client.run()

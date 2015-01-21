@@ -61,6 +61,7 @@ class StreamerServer(threading.Thread):
         while not self.halt:
             # Capture a frame from the webcam.
             retval, frame = self.video.read()
+            frame = cv2.flip(frame, 1)
             self.switch_resolution()
             # Resize the frame
             frame = cv2.resize(frame, (self.width, self.height))
@@ -143,10 +144,10 @@ class StreamerServer(threading.Thread):
 if __name__=='__main__':
     # For some reason, cv2.VideoCapture can't be controlled inside the class/thread.
     print 'Connecting to webcam...'
-    vc = cv2.VideoCapture(0)   
+    vc = cv2.VideoCapture(0) 
     vc.open(0)
     print 'Starting data transmission...'
-    streamer_thread = StreamerServer(vc, 890, 500)
+    streamer_thread = StreamerServer(vc, 960, 540)
     streamer_thread.daemon = True
     streamer_thread.start()
     

@@ -1,0 +1,2 @@
+python/TestVideoData/*
+!python/TestVideoData/.gitignore
