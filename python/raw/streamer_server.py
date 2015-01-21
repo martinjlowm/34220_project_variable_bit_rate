@@ -116,7 +116,7 @@ class StreamerServer(threading.Thread):
         return sync.ljust(self.chunk_length, '0')
     
     def kill_frame(self):
-        """Construct the sync frame."""
+        """Construct the sync kill frame."""
         return self.sync_kill.ljust(self.chunk_length, '0')
     
     def change_resolution(self, w, h):
