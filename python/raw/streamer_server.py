@@ -111,7 +111,7 @@ class StreamerServer(threading.Thread):
         return vc
     
     def sync_frame(self):
-        """Construct the sync frame."""
+        """Construct the sync frame, which will look something like #!-START-!#:1280x720:."""
         sync = '%s:%sx%s:' % (self.sync_start, self.width, self.height,)
         return sync.ljust(self.chunk_length, '0')
     
