@@ -28,6 +28,12 @@
         android:layout_height="wrap_content"
         android:text="- Switch Camera Preview -"
         />
+    <Button
+        android:id="@+id/sendpacket"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="- Send packet -"
+        />
     <SurfaceView
         android:id="@+id/surfaceview"
         android:layout_width="fill_parent"

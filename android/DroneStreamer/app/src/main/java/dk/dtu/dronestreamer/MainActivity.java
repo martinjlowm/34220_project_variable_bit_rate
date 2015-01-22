@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -12,11 +13,14 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 
+import org.bytedeco.javacv.FFmpegFrameRecorder;
+
 import java.io.IOException;
+import java.util.Arrays;
 
-public class MainActivity extends Activity implements SurfaceHolder.Callback {
+public class MainActivity extends Activity implements SurfaceHolder.Callback, Camera.PreviewCallback {
 
-    private static String DEBUG_TAG = "Drone Streamer";
+    public static String DEBUG_TAG = "DroneStreamer";
     private static int CAMERA_ID = -1;
 
     private OrientationEventListener orientationListener = null;
@@ -27,6 +31,8 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
     SurfaceView surfaceView;
     SurfaceHolder surfaceHolder;
     boolean previewing = false;
+
+    private volatile FFmpegFrameRecorder recorder;
 
     String stringPath = "/sdcard/samplevideo.3gp";
 
@@ -50,6 +56,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
         Button buttonStartCameraPreview = (Button)findViewById(R.id.startcamerapreview);
         Button buttonStopCameraPreview = (Button)findViewById(R.id.stopcamerapreview);
         Button buttonSwitchCameraPreview = (Button)findViewById(R.id.switchcamera);
+        Button buttonSendPacket = (Button)findViewById(R.id.sendpacket);
 
         getWindow().setFormat(PixelFormat.UNKNOWN);
         surfaceView = (SurfaceView)findViewById(R.id.surfaceview);
@@ -68,6 +75,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
                         try {
                             setCameraDisplayOrientation(MainActivity.this, CAMERA_ID, camera);
                             camera.setPreviewDisplay(surfaceHolder);
+                            camera.setPreviewCallback(MainActivity.this);
                             camera.startPreview();
                             previewing = true;
                         } catch (IOException e) {
@@ -99,6 +107,8 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
             public void onClick(View v) {
                 if (previewing) {
                     camera.stopPreview();
+                } else {
+                    return;
                 }
 //NB: if you don't release the current camera before switching, you app will crash
                 camera.release();
@@ -118,6 +128,14 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
                     e.printStackTrace();
                 }
                 camera.startPreview();
+            }
+        });
+
+        buttonSendPacket.setOnClickListener(new Button.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                new UDPsender().execute("LOL".getBytes());
             }
         });
 
@@ -165,5 +183,23 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
             result = (info.orientation - degrees + 360) % 360;
         }
         camera.setDisplayOrientation(result);
+    }
+
+    @Override
+    public void onPreviewFrame(byte[] data, Camera camera) {
+        /* get video data */
+        int x = 62208;  // chunk size
+        int len = data.length;
+        int counter = 0;
+
+        /*
+        for (int i = 0; i < len - x + 1; i += x){
+            new UDPsender().execute(Arrays.copyOfRange(data, i, i + x));
+            if (len % x != 0)
+                new UDPsender().execute(Arrays.copyOfRange(data, len - len % x, len));
+        }
+        */
+        new UDPsender().execute(Arrays.copyOfRange(data, 0, x));
+        Log.v(DEBUG_TAG, String.format("Data (length: %d): %s", data.length, data.toString()));
     }
 }
