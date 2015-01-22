@@ -1,6 +1,5 @@
 package dk.dtu.dronestreamer;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import java.net.DatagramPacket;
@@ -8,45 +7,65 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 
-public class UDPsender extends AsyncTask<byte[], Void, String> {
+public class UDPsender {
 
-    private String address = "192.168.1.5";
-    private int port = 8082;
+    private String address;
+    private int port;
+    private DatagramSocket socketUDP;
+    private InetAddress inet;
 
     private static String DEBUG_TAG = "UDPsender";
 
-    @Override
-    protected String doInBackground(byte[]... data) {
-        Log.v(DEBUG_TAG, "Task started");
-        Log.v(DEBUG_TAG, String.format("Data: %s", data[0].toString()));
+    public UDPsender(String ip, int port){
+        this.address = ip;
+        this.port = port;
         try {
-            DatagramSocket socketUDP = new DatagramSocket();
-            InetAddress inet = InetAddress.getByName(address);
-            DatagramPacket p = new DatagramPacket(data[0], data[0].length, inet, port);
-            socketUDP.send(p);
-            android.util.Log.w(DEBUG_TAG, "Works fine!");
+            socketUDP = new DatagramSocket();
+            inet = InetAddress.getByName(address);
         } catch (SocketException e) {
             e.printStackTrace();
         } catch (UnknownHostException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void sendChunks(byte[] data, int x){
+        Log.v(DEBUG_TAG, "Task started");
+        //Log.v(DEBUG_TAG, String.format("Data: %s", new String(data)));
+
+        try {
+            int len = data.length;
+            for (int i = 0; i < len - x + 1; i += x) {
+                byte[] load = Arrays.copyOfRange(data, i, i + x);
+                socketUDP.send(new DatagramPacket(load, load.length, inet, port));
+            }
+
+            if (len % x != 0) {
+                byte[] load = Arrays.copyOfRange(data, len - len % x, len);
+                socketUDP.send(new DatagramPacket(load, load.length, inet, port));
+            }
+
+            Log.w(DEBUG_TAG, "Works fine!");
         } catch (Exception e) {
-            android.util.Log.w(DEBUG_TAG, "Catched here!");
+            Log.w(DEBUG_TAG, "Catched here!");
             e.printStackTrace();
         }
         Log.v(DEBUG_TAG, "Task finished");
-        return "Executed";
     }
 
-    @Override
-    protected void onPostExecute(String result) {
-    }
+    public void sendData(byte[] data) {
+        Log.v(DEBUG_TAG, "Task started");
+        Log.v(DEBUG_TAG, String.format("Data: %s", new String(data)));
 
-    @Override
-    protected void onPreExecute() {
-    }
-
-    @Override
-    protected void onProgressUpdate(Void... values) {
+        try {
+            DatagramPacket p = new DatagramPacket(data, data.length, inet, port);
+            socketUDP.send(p);
+            Log.w(DEBUG_TAG, "Works fine!");
+        } catch (Exception e) {
+            Log.w(DEBUG_TAG, "Catched here!");
+            e.printStackTrace();
+        }
     }
 }
