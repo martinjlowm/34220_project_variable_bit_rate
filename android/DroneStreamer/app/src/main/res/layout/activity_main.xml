@@ -1,41 +1,42 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/record_layout"
     android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
-    <TextView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <!-- android:text="udp://10.16.165.158:10000/test.flv" -->
+    <EditText
+        android:id="@+id/address"
+        android:text="udp://10.16.170.23:10000/test.flv"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/app_name"
         />
     <Button
-        android:id="@+id/startcamerapreview"
+        android:id="@+id/btn1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="- Start Camera Preview -"
-        />
-    <Button
-        android:id="@+id/stopcamerapreview"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="- Stop Camera Preview -"
         />
 
     <Button
-        android:id="@+id/switchcamera"
+        android:id="@+id/btn2"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="- Switch Camera Preview -"
+        />
+
+    <Button
+        android:id="@+id/btn3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        />
+
+    <Button
+        android:id="@+id/btn4"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
         />
     <Button
-        android:id="@+id/sendpacket"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="- Send packet -"
-        />
-    <SurfaceView
-        android:id="@+id/surfaceview"
+        android:id="@+id/btn5"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         />

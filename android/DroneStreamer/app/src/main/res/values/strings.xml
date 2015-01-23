@@ -3,5 +3,8 @@
 
     <string name="app_name">Drone Streamer</string>
     <string name="dummy_content">Drone Streamer</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
 
 </resources>
