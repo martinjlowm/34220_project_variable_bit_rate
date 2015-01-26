@@ -1,20 +1,89 @@
-\documentclass{article}
-\usepackage{fontspec}
-
+\documentclass[12pt]{report}
+% Relevant for the front page and the headers.
 \title{Variable bit rate MPEG video implementation for drone applications}
-\author{Martin Madsen, Alexander Brandi, Christian Laustsen}
-\date{\today}
+% Multiple supervisors are separated by \\.
+%\supervisor{Supervisor Name}
+% Unfortunately, you will have to count the characters,
+% using some other way, since it can't be done in LaTeX.
+%\characters{Number of characters in the document}
+\course{34220: Coding in Communication Systems}
+\date{25. January, 2015}
+% Multiple authors are separated by \\. You probably want 
+% to set \rhead{} to use only the student numbers though, 
+% else the header will look weird.
+\author{Alexander Brandi (s103208)\\
+Christian Kjær Laustsen (s124324)\\
+Martin Jesper Low Madsen (s124320)}
+\rhead{s103208, s124324 and s124320}
+
+
+% A list of helper commands
+%
+% - Figures
+% Figures (from the Figure folder) can easily be included with 
+% the helper function \Fig[width]{name}{caption}, e.g. 
+% \Fig[0.7]{CatInBucket}{A Cat} or, leave out [0.7] to have 
+% the default width of 1. It will automatically create a
+% \label with the picture name (e.g. \ref{fig:CatInBucket}).
+%
+% - Tables
+% Tables can be created with labels and captions, by using
+% the \begin{Table}{position}{caption}{label}, e.g. 
+% \begin{Table}{|l|c|c|}{My table}{mytablelable}
+%    Something & In & Here \\
+% \end{Table}.
+%
+% - Appendices
+% Appendices can quickly be included, and auto numbered
+% using the \begin{Appendix}{title} content \end{Appendix} 
+% helper environment.
+%
+% - Abstract
+% Quickly create an abstract with the environment command
+% \begin{Abstract} content \end{Abstract}.
+%
+% - Sub equations
+% Quickly created subequations with align, by using the
+% \begin{subeq} environment.
+
 
 \begin{document}
 
 \maketitle
 
-\section{Problem}
-\subsection{Formulation}
-Streaming video from a drone application, with a varying signal can pose a problem when it comes to efficiency of video quality. How is this handled in a given communication system, with a variable data bit rate?
+\begin{Abstract}
+We propose a design of an adaptive MPEG encoding plan with varying bit rate for use with remote controlled drones in real life situations where wireless networks provide poor signal. This design is implemented as part of a prototype in Python 2.7.x and a port as a drone application in Java. This report describes our design and our implementation ideas of the drone application for an Android based smart phone.\\
 
+It is also investigated what the advantages and outcome of different techniques to lower the bit rate might have, showing that it is possible to reach lower bit rates when adjusting parameters such as resolution, frame rate and color depth, either by themselves or coupled together.
+\end{Abstract}
 
-\subsection{Description}
-Analyse how, and when, to handle varying bit rates in a streaming service (in this case, from drone to client), and how one can handle these cases in an optimal way. The analysis will be implemented as a prototype that will show one way to solve this problem with bit rates between 300kbit/s and 10Mbit/s.
+\ToCWithTablesAndFigures[Table of Contents]
+
+\Section{Introduction}
+\Section{Theory}
+\Section{Implementation}
+\Section{Evaluation}
+\newpage
+\Section{Conclusion}
+
+\begin{Appendix}{python streamer\_server.py}
+    \inputminted[
+        frame=lines,
+        framesep=2mm,
+        baselinestretch=1.2,
+        fontsize=\footnotesize,
+        linenos
+    ]{python}{Python/streamer_server.py}
+\end{Appendix}
+
+\begin{Appendix}{python streamer\_client.py}
+    \inputminted[
+        frame=lines,
+        framesep=2mm,
+        baselinestretch=1.2,
+        fontsize=\footnotesize,
+        linenos
+    ]{python}{Python/streamer_client.py}
+\end{Appendix}
 
 \end{document}

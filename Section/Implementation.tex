@@ -1,0 +1,50 @@
+\subsection{Streaming RAW video using Python}\label{subsec:python}
+To test some of the ideas mentioned in section \ref{sec:Theory}, theory, a python prototype program was constructed. The program is limited to transmitting RAW video data, since encoding it introduced quite a lot of additional complexity in handling packages and stitching it together on the client side.\\
+
+The implementation consists of a server that broadcasts a video stream, included in appendix A, and a client that displays the received video stream, included in appendix B.
+
+\subsubsection{Requirements}
+To run the python script, are few requirements a needed, as listed below,
+
+\begin{enumerate}
+    \item Make sure you are running python version 2.7.x, since OpenCV does not work under python 3.x.
+    \item Install OpenCV (Intel Open Source Computer Vision Library) from \url{http://opencv.org}.
+    \item Install numpy from \url{http://www.numpy.org}.
+\end{enumerate}
+
+
+\subsubsection{Usage}
+A local setup where both the server and client resides on the same machine is the easiest way to get things going. Alternatively, the IP and port numbers can be adjusted in the script. They are found inside the \textit{\_\_init\_\_} methods of each of the server and client objects.\\
+
+First, start the server with \textit{python streamer\_server.py}. Once the server shows a menu of different resolutions it is broadcasting the video feed from the computers webcam (can alternatively be switched to use a file instead). 
+
+The client can now be started with \textit{python streamer\_client.py}. The client will connect to the server, and automatically synchronize so it reads from the beginning of each frame and displays it when it has received a full frame. Resolution is adjusted by the server, and is sent along with a synchronization keyword.\\
+
+The client will display some statistics during the transmission, presuming the script is run in a terminal (on the command line). If the text keeps making new lines, adjust the width of the terminal until it just updates the current line.
+
+It is now possible to change the resolution during the transmission, from the server side. This is supposed mimic the drone switching to a lower bit rate, when the signal worsens. The client automatically adjusts, and the statistics changes.\\
+
+
+\subsubsection{Problems}
+Since the implementation sends RAW video frames, they take up quite a lot of bandwidth. One advantage to RAW video frames is that all frames have the same size, since there hasn't been any information compressed or removed. This makes it a bit easier to handle, when splitting up the image into packages (they are too large to send directly through a network socket).\\
+
+Furthermore, the client can quite keep up with the server transmission, when it also has to transform the frames to something displayable and show it. This is shown by the drop in fps, when the resolution is higher. The lower the resolution is, the higher the fps gets, since the client has to do less work, and less bandwidth is also used. It will cap though at the fps of the transmission, which during testing was around 30 fps.
+
+\subsection{Streaming compressed video from Drone}
+% Forklar kort om hvordan vi simulerer en drone ved hjælp af en Android telefon
+
+
+\subsubsection{Requirements}
+% Beskriv de nødvendige programmer
+
+\subsubsection{Architecture}
+% Hvordan er den overordnede arkitektur af systemet - her skal der postes et blovk diagram
+
+\subsubsection{Resource limitations}
+% Forklare udfordringerne ved at streame video fra en drone
+
+\subsubsection{Deploying FFmpeg to an Android application}
+% Forklar hvordan man får FFmpeg til at virke på en android telefon, og hvordan man indkapsler ffmpeg i en android applikation i en JNI
+
+\subsubsection{Transfer video to the server}
+% Hvordan får vi videoen hen på serveren og hvordan viser vi den? - dette gør vi ved at sende video fra telefonen over udp til en bestemt ip og port, hvor serveren så lytter på dette

@@ -1,0 +1,188 @@
+\subsection{The python video streamer in practice}
+To test the python streamer implementation from section \ref{subsec:python}, data was gathered from a 10 second run in each resolution. Furthermore, the received data was also encoded in an various MPEG formats, to disk, so the size could be investigated. We are then able to extrapolate from this information, to its practical implications.\\
+
+\noindent The tables below show the data gathered from the different MPEG variations.
+
+\begin{Table}{l|c c c c c c}{Transmission of RAW video, encoded to XVID MPEG-4}{xvid}
+    \textbf{Resolution} & \textbf{Frames} & \textbf{Avg. fps} & \textbf{Avg. MB/s} & \textbf{Adjusted Mb/s} & \textbf{File size} & \textbf{Mb/s} \\\hline
+    1280x720 & 111 & 11.06 & 30.59& 530.80 & 6.325 MB & \textbf{10.94} \\
+    1120x630 & 123 & 12.29 & 26.02& 406.44 & 3.267 MB & \textbf{5.10} \\
+    960x540 & 204 & 20.31 & 31.59& 298.61 & 4.625 MB & \textbf{4.35} \\
+    890x500 & 214 & 21.32 & 28.47& 256.35 & 3.873 MB & \textbf{3.47} \\
+    800x540 & 277 & 27.60 & 29.81& 207.36 & 4.709 MB & \textbf{3.26} \\
+    640x360 & 299 & 29.84 & 20.63& 132.73 & 4.512 MB & \textbf{2.90} \\
+    480x270 & 286 & 28.57 & 11.11& 74.66 & 3.948 MB & \textbf{2.65} \\
+    320x180 & 300 & 29.89 & 5.16& 33.15 & 4.300 MB & \textbf{2.75} \\
+    160x90 & 300 & 29.95 & 1.29& 8.27 & 2.763 MB & \textbf{1.77} \\
+\end{Table}
+
+\begin{Table}{l|c c c c c c}{Transmission of RAW video, encoded to MPEG-1}{mpeg}
+    \textbf{Resolution} & \textbf{Frames} & \textbf{Avg. fps} & \textbf{Avg. MB/s} & \textbf{Adjusted Mb/s} & \textbf{File size} & \textbf{Mb/s} \\\hline
+    1280x720 & 115 & 11.48 & 31.74 & 530.87 & 8.549 MB & \textbf{14.27} \\
+    1120x630 & 117 & 11.67 & 24.71 & 406.45 & 3.485 MB & \textbf{5.72} \\
+    960x540 & 141 & 14.05 & 21.85 & 298.54 & 3.544 MB & \textbf{4.83} \\
+    890x500 & 217 & 21.62 & 28.86 & 256.29 & 5.777 MB & \textbf{5.11} \\
+    800x540 & 258 & 25.74 & 27.8 & 207.35 & 7.313 MB & \textbf{5.44} \\
+    640x360 & 286 & 28.55 & 19.73 & 132.69 & 5.317 MB & \textbf{3.57} \\
+    480x270 & 287 & 28.61 & 11.12 & 74.62 & 7.101 MB & \textbf{4.75} \\
+    320x180 & 300 & 29.86 & 5.16 & 33.18 & 6.855 MB & \textbf{4.39} \\
+    160x90 & 300 & 29.93 & 1.29 & 8.28 & 5.564 MB & \textbf{3.56} \\
+\end{Table}
+
+The most important column is the last one, which is the estimated transmission bit rate in Mb/s, of the video in the various resolutions. The values are adjusted to an ideal situation of them all having 24 frames per second. 
+
+One thing to note is that the encoding technique directly affects the frame rate of the client, since they require various amounts of resources. Most surprisingly is that the XVID MPEG-4 codec, shown in table \ref{tab:xvid}, not only results in a smaller file size, as was expected, but also in a less intensive encoding technique, compared to the older MPEG-1 codec, shown in table \ref{tab:mpeg}. This is most likely the result of optimized algorithms, which has been developed in the time between the two standards, since there is more or less ten years between them.\\
+
+To compare the two measurements, we can plot the Mb/s on the y-axis and the resolution on the x-axis, as shown in figure \ref{fig:EncodedBitRates} below.
+
+\newpage
+\Fig[1]{EncodedBitRates}{Comparison of XVID MPEG-4 and MPEG-1}
+
+We can conclude, from the chart in figure \ref{fig:EncodedBitRates}, that the XVID MPEG-4 codec is the most optimal to use due to its lower bit rate, and also the indication that it is less resource intensive.
+
+
+
+
+\subsection{Using ffmpeg to transcode videos}
+To investigate further, we can use ffmpeg directly to encode a video and compare its different size and quality, to check if it matches our other data. 
+
+We first record a 20 second video from a computer webcam. We remove the audio from the video using the ffmpeg command \textit{ffmpeg -i Original.mov -vcodec copy -an NoAudio.mov}. The video then has the specifications,
+
+\begin{Table}{l l l l l l l l}{Original video specifications}{originalvideo}
+    \textbf{Duration} & \textbf{Encoder} & \textbf{Resolution} & \textbf{Bit-rate} & \textbf{Frames} & \textbf{Size} & \textbf{FPS} \\
+    20.33s & H.264/MPEG-4 & 1080x720 & 7976 Kb/s & 612 & 20.34 MB & 30
+\end{Table}
+
+
+\subsubsection{Different resolutions}\label{subsubsec:resolution}
+It is then possible to transcode this base video to a set of different resolutions, so we can compared the sizes and bit rates of the videos. The videos are transcoded using ffmpeg again, with the following command \textit{ffmpeg -i NoAudio.mov -crf 17 -vf scale=width:-1 Output.mov}, where width is substituted with the desired width to scale down to. The ratio is kept, which means the height is automatically calculated when set to -1. The resolution, bit rates and file sizes of the transcoded videos are gathered in table \ref{tab:transcoded} below. Included is also a subjective quality assessment, which is performed by watching the scaled videos and comparing to the original. The measurement is on a scale from \textit{very good} to \textit{unwatchable}.
+
+\newpage
+\begin{Table}{l c c c}{Videos transcoded to different resolutions}{transcoded}
+    \textbf{Resolution} & \textbf{Bit rate} & \textbf{File size} & \textbf{Subjective quality assessment} \\\hline
+    1080x720 & 7938 Kbps & 20.24 MB & Very good \\
+    960x640 & 5736 Kbps & 14.58 MB & Very good \\
+    900x600 & 5038 Kbps & 13.00 MB & Very good \\
+    840x560 & 4257 Kbps & 10.91 MB & Very good \\
+    780x520 & 3701 Kbps & 9.44 MB & Slightly below very good \\
+    720x480 & 3001 Kbps & 7.65 MB & Good \\
+    660x440 & 2609 Kbps & 6.65 MB & Good \\
+    600x400 & 2076 Kbps & 5.30 MB & Good \\
+    540x360 & 1679 Kbps & 4.28 MB & Fine \\
+    480x320 & 1286 Kbps & 3.28 MB & Okay \\
+    420x280 & 1029 Kbps & 2.62 MB & Bad \\
+    360x240 & 716 Kbps & 1.82 MB & Bad \\
+    300x200 & 518 Kbps & 1.32 MB & Slightly worse than bad \\
+    240x160 & 317 Kbps & 0.81 MB & Very bad \\
+    180x120 & 209 Kbps & 0.53 MB & Very bad \\
+    150x100 & 159 Kbps & 0.40 MB & Unwatchable \\
+    120x80 & 103 Kbps & 0.26 MB & Unwatchable \\
+\end{Table}
+
+Which we can also put in a charts, shown in figure \ref{fig:TranscodedBitRates} and \ref{fig:TranscodedFileSizes}, to show the correlations more clearly. \\
+
+\Fig[1]{TranscodedBitRates}{Correlation of bit rates to resolution of transcoded videos}
+
+\Fig[1]{TranscodedFileSizes}{Correlation of file sizes to resolution of transcoded videos}
+
+If we think back to our initial requirement of having a bit rate between 300 Kb/s and 10 Mb/s, we see that our highest resolution lies under the specification, which means we can go even higher. Unfortunately, our webcam can't record in a higher resolution, and up scaling a video resolution doesn't really makes sense quality-wise. One interesting thing though is that we are able to go below the minimum bit rate limit of our requirements. The first resolution to drop under is 180x120, which means our lowest resolution within the requirements is 240x160, which is also fairly close with a bit rate of 317 Kb/s. If we take into account the subjective quality assessment, we can see that the quality of the 240x160 is actually very bad. The lowest recommended resolution is the 480x320 resolution, which is determined to be of okay quality.
+
+
+\subsubsection{Different frame rates}
+As discussed, another way to lower the bit rate of a video stream, is to simply use a lower frame rate. Using our videos from the previous section, \ref{subsubsec:resolution}, we can investigate the correlation between the frame rate and the bit rate. 
+
+We again turn to ffmpeg as our tool, using the command \textit{ffmpeg -i ScaledInput.mov -crf 17 -r fps Output.mov}, where fps is substituted by the desired fps.\\
+
+Running this command on the videos with the resolutions 1080x720, 720x480, 420x280 and 360x240, we get the following data, shown in table \ref{tab:fps}.
+
+\newpage
+\begin{Table}{l|c c c c c}{Bit rates of videos transcoded to different frame rates}{fps}
+	\textbf{FPS} & \textbf{1080x720} & \textbf{720x480} & \textbf{420x280} & \textbf{360x240} & \textbf{300x200} \\\hline
+	\textbf{30} & 7938 & 3001 & 1029 & 716 & 518\\
+	\textbf{24} & 6914 & 2476 & 894 & 630 & 456\\
+	\textbf{20} & 6722 & 2359 & 855 & 614 & 445\\
+	\textbf{18} & 6552 & 2346 & 850 & 605 & 433\\
+	\textbf{16} & 6464 & 2295 & 833 & 590 & 425\\
+	\textbf{14} & 6173 & 2269 & 805 & 574 & 417\\
+	\textbf{12} & 6028 & 2190 & 773 & 548 & 392\\
+	\textbf{10} & 5737 & 2125 & 745 & 524 & 375\\
+	\textbf{8} & 5361 & 2015 & 699 & 497 & 356\\
+	\textbf{6} & 4733 & 1809 & 636 & 454 & 325\\
+	\textbf{4} & 3855 & 1535 & 539 & 386 & 275\\
+	\textbf{2} & 2588 & 1091 & 387 & 280 & 199\\
+\end{Table}
+
+Again, we chart the values, in figure \ref{fig:TranscodedFPS}, to show the correlation more clearly.
+
+\Fig[1]{TranscodedFPS}{Correlation of frame rates to bit rates of videos at different resolutions}
+
+We see that we gain the most by removing frames from the higher resolution videos. This is as expected, since each frame will carry more data, compared to the same frame from a lower resolution. Commenting on the quality of the video, the frame rate could easily be set to 20 by default, without much headache. All the way down to a frame rate of around 12, it is actually viewable without any bigger qualms. Below this is starts to stutter more visibly, and at around 6 frames per second it becomes an annoyance to watch. Note that these are of course completely our personal opinions though.
+
+
+
+\subsubsection{Removing colors (using a gray scale)}
+Finally, we can try to remove some of the color information from the videos, to lower the bit rate. As usual, ffmpeg comes to the rescue, and it is done using the command \textit{ffmpeg -i ScaledInput.mov -crf 17 -vf hue=s=0 Output.mov}.
+
+Using this command on all the resolutions we generated in section \ref{subsubsec:resolution}, we get the following bit rates, shown in table \ref{tab:grayscale}.
+
+\begin{Table}{l|c c r}{Bit rates of videos transcoded to gray scale}{grayscale}
+	\textbf{Resolution} & \textbf{Original bit rate} & \textbf{Gray scale bit rate} & \textbf{\% less} \\\hline
+	1080x720 & 7938 & 6728 & 15.24\% \\
+	960x640 & 5736 & 4438 & 22.63\% \\
+	900x600 & 5038 & 3939 & 21.81\% \\
+	840x560 & 4257 & 3342 & 21.49\% \\
+	780x520 & 3701 & 2917 & 21.18\% \\
+	720x480 & 3001 & 2404 & 19.89\% \\
+	660x440 & 2609 & 2125 & 18.55\% \\
+	600x400 & 2076 & 1699 & 18.16\% \\
+	540x360 & 1679 & 1381 & 17.75\% \\
+	480x320 & 1286 & 1070 & 16.80\% \\
+	420x280 & 1029 & 860 & 16.42\% \\
+	360x240 & 716 & 601 & 16.06\% \\
+	300x200 & 518 & 434 & 16.22\% \\
+	240x160 & 317 & 268 & 15.46\% \\
+	180x120 & 209 & 173 & 17.22\% \\
+	150x100 & 159 & 131 & 17.61\% \\
+	120x80 & 103 & 87 & 15.53\% \\
+\end{Table}
+
+Which we then display as a chart, shown in figure \ref{fig:TranscodedGrayscale}.
+
+\newpage
+\Fig[1]{TranscodedGrayscale}{Correlation of color/gray scale and bit rates of videos at different resolutions}
+
+Again, as the case with frame rates, we notice that the benefit of converting to gray scale becomes less the lower the resolution is. This is again because of the decrease in data present in each frame, which means less data can be removed. At around a resolution of 480x320, it becomes rather pointless to convert the video, since the gain is so minimal. We can naturally conclude that were this technique to be coupled with lowering the frame rates, the benefits will also be decreasing, the more frames are removed.\\
+
+Just for good measures sake, we can try and convert a few of the low resolution and lower frame rate videos to gray scale. The data is shown in table \ref{tab:fpsgrayscale}.
+
+\begin{Table}{l|c c c}{Bit rates of low fps videos transcoded to gray scale}{fpsgrayscale}
+    \textbf{FPS} & 12 & 10 & 8 \\\hline
+    \textbf{720x480} & 1873 & 1821 & 1748 \\
+    \textbf{420x280} & 666 & 641 & 603 \\
+    \textbf{360x240} & 471 & 450 & 433 \\
+\end{Table}
+
+As we see, we can shave off an additional 317Kb-64Kb off the bit rate, by transcoding to a gray scale.
+
+
+\subsection{The Drone application in practice}
+% Viser resultaterne og vurder hvor godt det er bla bla bla
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
