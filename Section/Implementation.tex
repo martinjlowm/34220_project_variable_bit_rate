@@ -8,8 +8,8 @@ To run the python script, are few requirements a needed, as listed below,
 
 \begin{enumerate}
     \item Make sure you are running python version 2.7.x, since OpenCV does not work under python 3.x.
-    \item Install OpenCV (Intel Open Source Computer Vision Library) from \url{http://opencv.org}.
-    \item Install numpy from \url{http://www.numpy.org}.
+    \item Install OpenCV (Intel Open Source Computer Vision Library) from \href{http://opencv.org}{http://opencv.org}.
+    \item Install numpy from \href{http://www.numpy.org}{http://www.numpy.org}.
 \end{enumerate}
 
 
@@ -32,13 +32,31 @@ Furthermore, the client can quite keep up with the server transmission, when it 
 
 \subsection{Streaming compressed video from Drone}
 % Forklar kort om hvordan vi simulerer en drone ved hjælp af en Android telefon
-
+It is obvious, that during so short period of time it isn't possible to build a drone from scratch, make it work and do real video streaming from the drone to a server. Therefore it was decided to make an Android application that will act like a drone. The Android application is nothing like a real drone, but the Android application is a far better testing environment rather than testing locally on a computer. Because the Android application is low on resources regarding CPU, RAM and network processing, it will be a much better testing environment that is closer to the obstructions of supplying a streaming service for a functional drone.
 
 \subsubsection{Requirements}
+To run the Drone application, are few requirements a needed, as listed below,
+
+\noindent\textbf{Android}
+\begin{enumerate}
+    \item Smartphone with Android 4.4.x (KitKat) or later
+        \subitem Make sure to allow installation of third-party apps
+    \item Download the latest .apk from \href{https://github.com/martinjlowm/34220_project_variable_bit_rate/raw/master/android/DroneStreamer/releases/}{this repository}
+\end{enumerate}
+
+\noindent\textbf{Server}
+\begin{enumerate}
+    \item Install VLC media player 2.1.2 (Rincewind) or later from \href{http://www.videolan.org/}{http://www.videolan.org/}
+    \item Run command: \texttt{vlc udp://@:10000}
+        \subitem This will make VLC start listening for incoming UDP data at port 10000
+\end{enumerate}
+
+
 % Beskriv de nødvendige programmer
 
 \subsubsection{Architecture}
 % Hvordan er den overordnede arkitektur af systemet - her skal der postes et blovk diagram
+\Fig[1]{Android/drone}{Overview for the drone application}
 
 \subsubsection{Resource limitations}
 % Forklare udfordringerne ved at streame video fra en drone

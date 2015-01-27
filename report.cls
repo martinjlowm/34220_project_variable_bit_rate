@@ -15,11 +15,22 @@
 \usepackage{lastpage}
 \usepackage{truncate}
 \usepackage{minted}
-\usepackage{url}
 \usepackage[a4paper, top=3cm, bottom=3cm, left=2cm, right=2cm]{geometry}
 
 \definecolor{c991a14}{RGB}{153,26,20}
 \definecolor{c999999}{RGB}{153,153,153}
+
+%--------------------------------------------------------
+% Links style
+%--------------------------------------------------------
+\usepackage{graphicx,colortbl}
+\usepackage{fontspec}
+\usepackage[colorlinks = true,
+            linkcolor = black,
+            urlcolor  = c991a14,
+            citecolor = black,
+            anchorcolor = black]{hyperref}
+            
 
 %--------------------------------------------------------
 % Fields that user can set (in addition to title, author, etc)
