@@ -1,13 +1,18 @@
 To allow a drone to cast a stable video stream to a distant server, the loss of an efficient data rate must be countered. Using MPEG codecs, we can reduce the need of the total transmitted bits. Depending on the video feed and its use cases, the compression strength can be chosen and tested to find a proper value which requires a low bit rate while keeping a desired video quality.
 
-In the case of a drone transmitting a feed, this compression must adapt to the quality of the network. A poor wireless network quality reduces how much can be transmitted and the video may experience stuttering frames. The desired video stream is a smooth, stutterless video with images of high quality. 
+In the case of a drone transmitting a feed, this compression must adapt to the quality of the network. A poor wireless network quality reduces how much can be transmitted and the video may experience stuttering frames. The desired video stream is a smooth, stutterless video with images of high quality when possible. 
 
 \subsection{Compressing video}
+A way of reducing the data being sent is by compressing the data. While this affects the image sligthly in loss of quality, it allows us to reduce the data size of a video. Audio is transferred as well and will also affect the final experience.
 
 \subsubsection{Adjustable parameters}
+Like the human ear is limited to a set of frequencies it may experience, the human eye is limited in the number of shades it can see. Thus, by reducing the color space in a video, the resulting experience of that video will reduce the amount of data drastically while providing a sufficient image.
 % forklar de forskellige paramtre man kan justere på - framerate, format, farver, kvalitet etc.
 
+To sum up, by encoding using standard MPEG
+
 \subsubsection{Subjectivity of compression}
+% Motion detection. Only send data that have changed compared to the previous images.
 % forklar subjektivitens rolle i billedkompression
 
 \subsubsection{Limitations and known issues}
@@ -16,7 +21,15 @@ In the case of a drone transmitting a feed, this compression must adapt to the q
 \subsection{Compressing video using FFmpeg}
 % hvordan kan man komprimere video ved hjælp af FFmpeg
 
+
 \subsection{Protocols for streaming video}
+When choosing to stream video, different protocols are available. First comes the choice of whether to use TCP or UDP. Briefly explained, the differences between the two is that TCP sets up a connection (it is connection-oriented), and cares about both packet order and if the packets are received or not. UDP on the other hand is a connection-less protocol and simply transmits the packet, and it is then up to the receiver to decide, in the application layer typically, if a packet needs to be resend.
+
+Typically TCP isn't used when live-streaming, since it adds a lot of overhead. Concerning packet loss, a buffer most be present, so the lost ones can be resent. When multiple clients are connected, resources can slowly begin to become a problem.
+
+UDP on the other hand doesn't care about this. It also allows the use of IP multicast, which is very suitable for more than one receiver.\\
+
+To sum up, UDP is recommended, especially in an environment where the signal quality will vary, and packets can be lost.
 
 \subsubsection{TCP}
 % WS, RMTP, RTSP

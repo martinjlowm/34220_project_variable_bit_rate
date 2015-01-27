@@ -1,9 +1,9 @@
 \subsection{Streaming RAW video using Python}\label{subsec:python}
-To test some of the ideas mentioned in section \ref{sec:Theory}, theory, a python prototype program was constructed. The program is limited to transmitting RAW video data, since encoding it introduced quite a lot of additional complexity in handling packages and stitching it together on the client side.\\
+To test some of the ideas mentioned in section \ref{sec:Theory}, a python prototype program was constructed. The program is limited to transmitting RAW video data, since encoding it introduced quite a lot of additional complexity in handling packages and stitching it together on the client side.\\
 
 The implementation consists of a server that broadcasts a video stream, included in appendix A, and a client that displays the received video stream, included in appendix B.
 
-\subsubsection{Requirements}
+\subsubsection{Requirements}\label{subsubsec:requirements}
 To run the python script, are few requirements a needed, as listed below,
 
 \begin{enumerate}
@@ -11,6 +11,24 @@ To run the python script, are few requirements a needed, as listed below,
     \item Install OpenCV (Intel Open Source Computer Vision Library) from \href{http://opencv.org}{http://opencv.org}.
     \item Install numpy from \href{http://www.numpy.org}{http://www.numpy.org}.
 \end{enumerate}
+
+
+\subsubsection{Architecture}
+The architecture of the python implementation is a bit simpler than a final implementation would look like. Figure \ref{fig:PythonImplementation} shows an overview of the implementation in an easily digestable way.
+
+\Fig[1]{PythonImplementation}{Overview of the python implementation}
+
+As seen, the server first takes the video feed from the webcam. This could be substituted for a file, if needed. To actually interact with the webcam and perform operations on image frames, we use OpenCV, as discussed in the requirements in section \ref{subsubsec:requirements}.
+
+Once we have an image frame, we resize the frame on the server side, to that we transmit varying data, depending on the resolution we resize to. Now, to actually transmit the frame, we have to convert it to a string since the frame is in the form of a matrix when OpenCV handles it.
+
+The final steps on the server side, is to in the beginning of each frame, transmit a synchronization keyword, which also holds the information about the resolution of the frame that is coming. After this, the image frame, which is now represented as a string, is divided into smaller chunks, and then each chunk is sent broadcast out on an UDP connection.\\
+
+The client first connects to the servers UDP broadcast. It then waits for the synchronization keyword, so it knows a frame has started. It then reads the resolution part of the synchronization keyword, and adjusts to this. After the sync has been performed, it reads packages until a fixed size is reached. Since we are transmitting RAW data, we can calculate the size as, width $\cdot$ height $\cdot$ depth $=$ full frame size. 
+
+After it has gathered a full frame, it then converts the frame back from the string representation, into a image matrix. We then resize the image frame back to the dimensions of our video player.
+
+Finally, we can either display the image frame directly, or we can encode the frame and write it to a file. The encoding would ideally have been handled at the server side, but it was easier to do on the client side, for the sake of prototyping.
 
 
 \subsubsection{Usage}
@@ -35,7 +53,9 @@ Furthermore, the client can quite keep up with the server transmission, when it 
 It is obvious, that during so short period of time it isn't possible to build a drone from scratch, make it work and do real video streaming from the drone to a server. Therefore it was decided to make an Android application that will act like a drone. The Android application is nothing like a real drone, but the Android application is a far better testing environment rather than testing locally on a computer. Because the Android application is low on resources regarding CPU, RAM and network processing, it will be a much better testing environment that is closer to the obstructions of supplying a streaming service for a functional drone.
 
 \subsubsection{Requirements}
-To run the Drone application, are few requirements a needed, as listed below,
+% Beskriv de nødvendige programmer
+
+To run the Drone application, some few requirements are needed, as listed below,\\
 
 \noindent\textbf{Android}
 \begin{enumerate}
@@ -52,14 +72,30 @@ To run the Drone application, are few requirements a needed, as listed below,
 \end{enumerate}
 
 
-% Beskriv de nødvendige programmer
-
 \subsubsection{Architecture}
-% Hvordan er den overordnede arkitektur af systemet - her skal der postes et blovk diagram
-\Fig[1]{Android/drone}{Overview for the drone application}
+The basic architecture are as show on Figure \ref{fig:drone}. The drone will be caring a camera that is recording and sending the raw data into an encoder. The encoder will, based on the current type op network and signal quality, be resized, compressed and get quality adjustments. When the data is compressed it will be broadcasted through the wireless network by using an UDP connection to the receiver. Furthermore the drone will send some signals to tell the server what the network conditions are and what kind of video format, quality and compression level to expect. This will be monitoring with the video at the end display.
+
+\Fig[1]{drone}{Overview for the drone application}
+
+\subsubsection{Usage}
+As before mentioned, there isn't enough time to make a drone from scratch, so it was decided to make an Android application. To get things working the requirements needs to be met. When all the requirements are forfilled, open the application with the name Drone Streamer (Figure \ref{fig:androidIcon}).
+
+\Fig[1]{androidIcon}{Launch icon for the Android application}
+
+When the application is open, enter the ip specific ip and port in the textfield (Figure \ref{fig:androidApp} for the target server (where VLC media player is installed).
+
+\Fig[1]{androidApp}{The interface of the Drone Streamer Android application.}
+
+\textbf{IMPORTANT!} Before clicking one of the buttons in the application, which indicates the resolution to stream - go the the folder where VLC is installed and start VLC by using the command:\\
+
+\textt{> vlc udp://@:10000}\\
+
+The command will start VLC and make it listen for UDP traffic on the port 10000. Enter the port number to match with the one set in the Android application.
+When VLC is started, choose a resolution and press the desired button to start the streaming process. Be patient as VLC has to buffer some data before it will show the video.
 
 \subsubsection{Resource limitations}
-% Forklare udfordringerne ved at streame video fra en drone
+% Forklar udfordringerne ved at streame video fra en drone
+Trying to create a streaming application for a drone isn't as easy as it may sound. A drone has a limited amount of resources, such as RAM, CPUand most important battery lifetime because it needs a lot of resources for other components like GPS, steering, motors etc. Therefore it's very important that the streaming service dosn't use too much resources and are effecient. Even though this project are using an Android smartphone to simulate the streaming service, these problems still occur and there has been a lot struggling with the limiting amount of resources. Accordingly it's
 
 \subsubsection{Deploying FFmpeg to an Android application}
 % Forklar hvordan man får FFmpeg til at virke på en android telefon, og hvordan man indkapsler ffmpeg i en android applikation i en JNI

@@ -8,7 +8,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{listings}
-\usepackage{float}
+%\usepackage{float}
 \usepackage{tikz}
 \usepackage[danish,english]{babel}
 \usepackage{fixltx2e}
@@ -121,7 +121,7 @@
 \newenvironment{Table}[3]{
     \def\tempcaption{#2}
     \def\templabel{#3}
-    \begin{table}[!ht]
+    \begin{table}[H]
         \begin{center}
         \begin{tabular}{#1}
 }{
@@ -133,7 +133,7 @@
 }
 
 \newcommand{\Fig}[3][1]{ 
-    \begin{figure}[!ht] 
+    \begin{figure}[H] 
         \centering 
         \includegraphics[width=#1\textwidth]{Figure/#2} 
         \caption{#3} 

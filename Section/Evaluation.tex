@@ -35,7 +35,6 @@ One thing to note is that the encoding technique directly affects the frame rate
 
 To compare the two measurements, we can plot the Mb/s on the y-axis and the resolution on the x-axis, as shown in figure \ref{fig:EncodedBitRates} below.
 
-\newpage
 \Fig[1]{EncodedBitRates}{Comparison of XVID MPEG-4 and MPEG-1}
 
 We can conclude, from the chart in figure \ref{fig:EncodedBitRates}, that the XVID MPEG-4 codec is the most optimal to use due to its lower bit rate, and also the indication that it is less resource intensive.
@@ -43,7 +42,7 @@ We can conclude, from the chart in figure \ref{fig:EncodedBitRates}, that the XV
 
 
 
-\subsection{Using ffmpeg to transcode videos}
+\subsection{Using ffmpeg to transcode videos}\label{subsec:ffmpeg}
 To investigate further, we can use ffmpeg directly to encode a video and compare its different size and quality, to check if it matches our other data. 
 
 We first record a 20 second video from a computer webcam. We remove the audio from the video using the ffmpeg command \textit{ffmpeg -i Original.mov -vcodec copy -an NoAudio.mov}. The video then has the specifications,
@@ -57,7 +56,6 @@ We first record a 20 second video from a computer webcam. We remove the audio fr
 \subsubsection{Different resolutions}\label{subsubsec:resolution}
 It is then possible to transcode this base video to a set of different resolutions, so we can compared the sizes and bit rates of the videos. The videos are transcoded using ffmpeg again, with the following command \textit{ffmpeg -i NoAudio.mov -crf 17 -vf scale=width:-1 Output.mov}, where width is substituted with the desired width to scale down to. The ratio is kept, which means the height is automatically calculated when set to -1. The resolution, bit rates and file sizes of the transcoded videos are gathered in table \ref{tab:transcoded} below. Included is also a subjective quality assessment, which is performed by watching the scaled videos and comparing to the original. The measurement is on a scale from \textit{very good} to \textit{unwatchable}.
 
-\newpage
 \begin{Table}{l c c c}{Videos transcoded to different resolutions}{transcoded}
     \textbf{Resolution} & \textbf{Bit rate} & \textbf{File size} & \textbf{Subjective quality assessment} \\\hline
     1080x720 & 7938 Kbps & 20.24 MB & Very good \\
@@ -95,7 +93,6 @@ We again turn to ffmpeg as our tool, using the command \textit{ffmpeg -i ScaledI
 
 Running this command on the videos with the resolutions 1080x720, 720x480, 420x280 and 360x240, we get the following data, shown in table \ref{tab:fps}.
 
-\newpage
 \begin{Table}{l|c c c c c}{Bit rates of videos transcoded to different frame rates}{fps}
 	\textbf{FPS} & \textbf{1080x720} & \textbf{720x480} & \textbf{420x280} & \textbf{360x240} & \textbf{300x200} \\\hline
 	\textbf{30} & 7938 & 3001 & 1029 & 716 & 518\\
@@ -148,7 +145,6 @@ Using this command on all the resolutions we generated in section \ref{subsubsec
 
 Which we then display as a chart, shown in figure \ref{fig:TranscodedGrayscale}.
 
-\newpage
 \Fig[1]{TranscodedGrayscale}{Correlation of color/gray scale and bit rates of videos at different resolutions}
 
 Again, as the case with frame rates, we notice that the benefit of converting to gray scale becomes less the lower the resolution is. This is again because of the decrease in data present in each frame, which means less data can be removed. At around a resolution of 480x320, it becomes rather pointless to convert the video, since the gain is so minimal. We can naturally conclude that were this technique to be coupled with lowering the frame rates, the benefits will also be decreasing, the more frames are removed.\\
@@ -164,19 +160,24 @@ Just for good measures sake, we can try and convert a few of the low resolution 
 
 As we see, we can shave off an additional 317Kb-64Kb off the bit rate, by transcoding to a gray scale.
 
+\subsubsection{Other methods}
+One other method is to set the presets of the encoder to either a slower or faster preset. The slower the preset, the more CPU will be used to encode the video. The resulting encoded video, will be smaller than the same video encoded with a faster preset. This is of course presents itself as a trade-off between resources and video size, where resources is probably very limiting on a drone application, making a very slow preset, not very viable.
+
+
+
 
 \subsection{The Drone application in practice}
 % Viser resultaterne og vurder hvor godt det er bla bla bla
 
-\Fig[1]{Android/320x240}{Live streaming 320x240 compressed video with 50 percent quality and 12 fps}
+\Fig[0.6]{320x240}{Live streaming 320x240 compressed video with 50 percent quality and 12 fps}
 
-\Fig[1]{Android/640x480}{Live streaming 640x480 compressed video with 50 percent quality and 12 fps}
+\Fig[0.6]{640x480}{Live streaming 640x480 compressed video with 50 percent quality and 12 fps}
 
-\Fig[1]{Android/1024x680}{Live streaming 1024x680 compressed video with 50 percent quality and 12 fps}
+\Fig[0.6]{1024x680}{Live streaming 1024x680 compressed video with 50 percent quality and 12 fps}
 
-\Fig[1]{Android/1280x720}{Live streaming 1280x720 compressed video with 50 percent quality and 12 fps}
+\Fig[0.6]{1280x720}{Live streaming 1280x720 compressed video with 50 percent quality and 12 fps}
 
-\Fig[1]{Android/1920x1080}{Live streaming 1920x1080 compressed video with 50 percent quality and 12 fps}
+\Fig[0.6]{1920x1080}{Live streaming 1920x1080 compressed video with 50 percent quality and 12 fps}
 
 
 
