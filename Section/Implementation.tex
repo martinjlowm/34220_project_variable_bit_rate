@@ -80,22 +80,26 @@ The basic architecture are as show on Figure \ref{fig:drone}. The drone will be 
 \subsubsection{Usage}
 As before mentioned, there isn't enough time to make a drone from scratch, so it was decided to make an Android application. To get things working the requirements needs to be met. When all the requirements are forfilled, open the application with the name Drone Streamer (Figure \ref{fig:androidIcon}).
 
-\Fig[1]{androidIcon}{Launch icon for the Android application}
+\Fig[0.4]{androidIcon}{Launch icon for the Android application}
 
 When the application is open, enter the ip specific ip and port in the textfield (Figure \ref{fig:androidApp} for the target server (where VLC media player is installed).
 
-\Fig[1]{androidApp}{The interface of the Drone Streamer Android application.}
+\Fig[0.6]{androidApp}{The interface of the Drone Streamer Android application.}
 
-\textbf{IMPORTANT!} Before clicking one of the buttons in the application, which indicates the resolution to stream - go the the folder where VLC is installed and start VLC by using the command:\\
+\textbf{IMPORTANT!} Before clicking one of the buttons in the application, which indicates the resolution to stream - go the the folder where VLC is installed and start VLC by using the following command:
 
-\textt{> vlc udp://@:10000}\\
+\begin{verbatim}
+> vlc udp://@:10000
+\end{verbatim}
 
 The command will start VLC and make it listen for UDP traffic on the port 10000. Enter the port number to match with the one set in the Android application.
-When VLC is started, choose a resolution and press the desired button to start the streaming process. Be patient as VLC has to buffer some data before it will show the video.
+When VLC is started, choose a resolution and press the desired button to start the streaming process. Be patient as VLC has to buffer some data before it will show the video.\\
+
+\textbf{IMPORTANT!} When you want to start a new stream or choose another resolution, close down the Android application - to do this, use the task manager that Android provides. Furthermore close down the VLC media player and do the same as described above.
 
 \subsubsection{Resource limitations}
 % Forklar udfordringerne ved at streame video fra en drone
-Trying to create a streaming application for a drone isn't as easy as it may sound. A drone has a limited amount of resources, such as RAM, CPUand most important battery lifetime because it needs a lot of resources for other components like GPS, steering, motors etc. Therefore it's very important that the streaming service dosn't use too much resources and are effecient. Even though this project are using an Android smartphone to simulate the streaming service, these problems still occur and there has been a lot struggling with the limiting amount of resources. Accordingly it's
+Trying to create a streaming application for a drone isn't as easy as it may sound. A drone has a limited amount of resources, such as RAM, CPUand most important battery lifetime because it needs a lot of resources for other components like GPS, steering, motors etc. Therefore it's very important that the streaming service dosn't use too much resources and are effecient. Even though this project are using an Android smartphone to simulate the streaming service, these problems still occur and there has been a lot struggling with the limiting amount of resources. Accordingly it's preffered to create dedicated hardware to process the video compressing to minimize the use of resources.
 
 \subsubsection{Deploying FFmpeg to an Android application}
 % Forklar hvordan man får FFmpeg til at virke på en android telefon, og hvordan man indkapsler ffmpeg i en android applikation i en JNI
