@@ -1,5 +1,11 @@
 apply plugin: 'android'
 
+def getDate() {
+    def date = new Date()
+    def formattedDate = date.format('yyyyMMddHHmmss')
+    return formattedDate
+}
+
 android {
     compileSdkVersion 19
     buildToolsVersion '19.1.0'
@@ -9,13 +15,38 @@ android {
     }
 
     defaultConfig {
+
         applicationId "dk.dtu.dronestreamer"
         minSdkVersion 15
         targetSdkVersion 17
         versionCode 1
-        versionName "1.0"
+        versionName ""
     }
+
+    def publish = project.tasks.create("publishAll")
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            if (variant.buildType.name == 'publishAll') {
+                output.outputFile = new File(
+                        output.outputFile.parent,
+                        output.outputFile.name.replace("${output.outputFile.name}", "release" + "-build-" + getDate() + ".apk"))
+
+                def task = project.tasks.create("publish${variant.name}Apk", Copy)
+                task.from(output.outputFile)
+                task.into("${rootDir}/releases/")
+
+                task.dependsOn variant.assemble
+                publish.dependsOn task
+            }
+        }
+    }
+
     buildTypes {
+        publishAll {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
