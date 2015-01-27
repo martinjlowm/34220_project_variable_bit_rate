@@ -99,10 +99,11 @@ When VLC is started, choose a resolution and press the desired button to start t
 
 \subsubsection{Resource limitations}
 % Forklar udfordringerne ved at streame video fra en drone
-Trying to create a streaming application for a drone isn't as easy as it may sound. A drone has a limited amount of resources, such as RAM, CPUand most important battery lifetime because it needs a lot of resources for other components like GPS, steering, motors etc. Therefore it's very important that the streaming service dosn't use too much resources and are effecient. Even though this project are using an Android smartphone to simulate the streaming service, these problems still occur and there has been a lot struggling with the limiting amount of resources. Accordingly it's prefered to create dedicated hardware to process the video compressing to minimize the use of resources. Due to the limited time this project will not try to cover this aspect.
+Trying to create a streaming application for a drone isn't as easy as it may sound. A drone has a limited amount of resources, such as RAM, CPUand most important battery lifetime because it needs a lot of resources for other components like GPS, steering, motors etc. Therefore it's very important that the streaming service dosn't use too much resources and are effecient. Even though this project are using an Android smartphone to simulate the streaming service, these problems still occur and there has been a lot struggling with the limiting amount of resources. Accordingly it's prefered to create dedicated hardware to process the video compressing to minimize the use of resources. Due to the time limit the project will not cover this area of concern.
 
 \subsubsection{Deploying FFmpeg to an Android application}
 % Forklar hvordan man får FFmpeg til at virke på en android telefon, og hvordan man indkapsler ffmpeg i en android applikation i en JNI
+To stream and compress video in an Android application the FFmpeg project is needed to be included into the application. The 
 
 \subsubsection{Transfer video to the server}
 % Hvordan får vi videoen hen på serveren og hvordan viser vi den? - dette gør vi ved at sende video fra telefonen over udp til en bestemt ip og port, hvor serveren så lytter på dette
