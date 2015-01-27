@@ -23,10 +23,11 @@ android {
         versionName ""
     }
 
+
     def publish = project.tasks.create("publishAll")
     applicationVariants.all { variant ->
         variant.outputs.each { output ->
-            if (variant.buildType.name == 'publishAll') {
+            if (variant.buildType.name == 'release') {
                 output.outputFile = new File(
                         output.outputFile.parent,
                         output.outputFile.name.replace("${output.outputFile.name}", "release" + "-build-" + getDate() + ".apk"))
@@ -48,7 +49,6 @@ android {
         }
 
         release {
-            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
