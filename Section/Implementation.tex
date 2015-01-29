@@ -1,4 +1,4 @@
-\subsection{Streaming RAW video using Python}\label{subsec:python}
+\subsection{Streaming RAW video using Python (s124324)}\label{subsec:python}
 To test some of the ideas mentioned in section \ref{sec:Theory}, a python prototype program was constructed. The program is limited to transmitting RAW video data, since encoding it introduced quite a lot of additional complexity in handling packages and stitching it together on the client side.\\
 
 The implementation consists of a server that broadcasts a video stream, included in appendix A, and a client that displays the received video stream, included in appendix B.
@@ -48,7 +48,7 @@ Since the implementation sends RAW video frames, they take up quite a lot of ban
 
 Furthermore, the client can quite keep up with the server transmission, when it also has to transform the frames to something displayable and show it. This is shown by the drop in fps, when the resolution is higher. The lower the resolution is, the higher the fps gets, since the client has to do less work, and less bandwidth is also used. It will cap though at the fps of the transmission, which during testing was around 30 fps.
 
-\subsection{Streaming compressed video from Drone}
+\subsection{Streaming compressed video from Drone (s103208)}
 % Forklar kort om hvordan vi simulerer en drone ved hjælp af en Android telefon
 It is obvious, that during so short period of time it isn't possible to build a drone from scratch, make it work and do real video streaming from the drone to a server. Therefore it was decided to make an Android application that will act like a drone. The Android application is nothing like a real drone, but the Android application is a far better testing environment rather than testing locally on a computer. Because the Android application is low on resources regarding CPU, RAM and network processing, it will be a much better testing environment that is closer to the obstructions of supplying a streaming service for a functional drone.
 
@@ -103,7 +103,14 @@ Trying to create a streaming application for a drone isn't as easy as it may sou
 
 \subsubsection{Deploying FFmpeg to an Android application}
 % Forklar hvordan man får FFmpeg til at virke på en android telefon, og hvordan man indkapsler ffmpeg i en android applikation i en JNI
-To stream and compress video in an Android application the FFmpeg project is needed to be included into the application. The FFmpeg project is a good choice because it has all the functionalities that are needed for this type of streaming service. Unfortunately the FFmpeg isn't that easy to implement into an Android application. To implement the source code of the FFmpeg project has to be download and rebuild to fit the system architecture the specific Android smartphone is using - in this case, the FFmpeg project is compiled to fit to an ARM processor. Furtermore to make it fit, the compiled files has to be wrapped around something called a JNI container that will make the Android SDK (build environment) able to include the FFmpeg compiled binaries into the Android application, so the bina
+To stream and compress video in an Android application the FFmpeg project is needed to be included into the application. The FFmpeg project is a good choice because it has all the functionalities that are needed for this type of streaming service. Unfortunately the FFmpeg isn't that easy to implement into an Android application. To implement the source code of the FFmpeg project has to be download and rebuild to fit the system architecture the specific Android smartphone is using - in this case, the FFmpeg project is compiled to fit to an ARM processor. Furtermore to make it fit, the compiled files has to be wrapped around something called a JNI container that will make the Android SDK (build environment) able to include the FFmpeg compiled binaries into the Android application, so the binaries can be used in the project.\\
+
+Compiling the FFmpeg into a JNI container (especially on Windows operating systems) is rather difficult and will not be explained further in this report. But if the reader is curious of learning how to recompile the FFmpeg and wrap it into a JNI container, have a look at the following link \href{http://stackoverflow.com/a/9681231/4306519}{http://stackoverflow.com/a/9681231/4306519}.
 
 \subsubsection{Transfer video to the server}
 % Hvordan får vi videoen hen på serveren og hvordan viser vi den? - dette gør vi ved at sende video fra telefonen over udp til en bestemt ip og port, hvor serveren så lytter på dette
+The final Android application are using the camera in the phone record it, send it back a SurfaceView (a special kind of design layer) that has a unique kind of interface. The SurfaceView's interface contains a function where the image data of every frame is returned. This step is extremely inefficient because every frame has to be displayed before it's possible to fetch the image data. After getting hold of the  image data it's sent directly to a FFmpeg object which is the wrapped FFmpeg project in a JNI container. The FFmpeg object will process the image data based on different parameters such as format, resolution, frame rate and quality and put it into a buffer. When the buffer is full, the FFmpeg will flush the buffer and send it over an UDP connection directy towards the server.\\
+
+There are some notable things to mention regarding the final Android application. First of all, the FFmpeg has been configured to include audio and the buffer is set way to low. This will result in a poor video quality when streaming places which there are a lot of noise beause the audio will fill up the buffer and almost no video. Secondly the quality of the compression is fixed to 50 percent, mostly because of the audio/buffer issue, but also because FFmpeg at compilation time was configured wrong so that the quality parameter dosn't work as expected.
+
+

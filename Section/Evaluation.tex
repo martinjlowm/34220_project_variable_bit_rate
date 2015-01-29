@@ -1,4 +1,4 @@
-\subsection{The python video streamer in practice}
+\subsection{The python video streamer in practice (s124324)}
 To test the python streamer implementation from section \ref{subsec:python}, data was gathered from a 10 second run in each resolution. Furthermore, the received data was also encoded in an various MPEG formats, to disk, so the size could be investigated. We are then able to extrapolate from this information, to its practical implications.\\
 
 \noindent The tables below show the data gathered from the different MPEG variations.
@@ -42,7 +42,7 @@ We can conclude, from the chart in figure \ref{fig:EncodedBitRates}, that the XV
 
 
 
-\subsection{Using ffmpeg to transcode videos}\label{subsec:ffmpeg}
+\subsection{Using ffmpeg to transcode videos (s124320)}\label{subsec:ffmpeg}
 To investigate further, we can use ffmpeg directly to encode a video and compare its different size and quality, to check if it matches our other data. 
 
 We first record a 20 second video from a computer webcam. We remove the audio from the video using the ffmpeg command \textit{ffmpeg -i Original.mov -vcodec copy -an NoAudio.mov}. The video then has the specifications,
@@ -53,7 +53,7 @@ We first record a 20 second video from a computer webcam. We remove the audio fr
 \end{Table}
 
 
-\subsubsection{Different resolutions}\label{subsubsec:resolution}
+\subsubsection{Different resolutions (s124320)}\label{subsubsec:resolution}
 It is then possible to transcode this base video to a set of different resolutions, so we can compared the sizes and bit rates of the videos. The videos are transcoded using ffmpeg again, with the following command \textit{ffmpeg -i NoAudio.mov -crf 17 -vf scale=width:-1 Output.mov}, where width is substituted with the desired width to scale down to. The ratio is kept, which means the height is automatically calculated when set to -1. The resolution, bit rates and file sizes of the transcoded videos are gathered in table \ref{tab:transcoded} below. Included is also a subjective quality assessment, which is performed by watching the scaled videos and comparing to the original. The measurement is on a scale from \textit{very good} to \textit{unwatchable}.
 
 \begin{Table}{l c c c}{Videos transcoded to different resolutions}{transcoded}
@@ -86,7 +86,7 @@ Which we can also put in a charts, shown in figure \ref{fig:TranscodedBitRates} 
 If we think back to our initial requirement of having a bit rate between 300 Kb/s and 10 Mb/s, we see that our highest resolution lies under the specification, which means we can go even higher. Unfortunately, our webcam can't record in a higher resolution, and up scaling a video resolution doesn't really makes sense quality-wise. One interesting thing though is that we are able to go below the minimum bit rate limit of our requirements. The first resolution to drop under is 180x120, which means our lowest resolution within the requirements is 240x160, which is also fairly close with a bit rate of 317 Kb/s. If we take into account the subjective quality assessment, we can see that the quality of the 240x160 is actually very bad. The lowest recommended resolution is the 480x320 resolution, which is determined to be of okay quality.
 
 
-\subsubsection{Different frame rates}
+\subsubsection{Different frame rates (s124320)}
 As discussed, another way to lower the bit rate of a video stream, is to simply use a lower frame rate. Using our videos from the previous section, \ref{subsubsec:resolution}, we can investigate the correlation between the frame rate and the bit rate. 
 
 We again turn to ffmpeg as our tool, using the command \textit{ffmpeg -i ScaledInput.mov -crf 17 -r fps Output.mov}, where fps is substituted by the desired fps.\\
@@ -117,7 +117,7 @@ We see that we gain the most by removing frames from the higher resolution video
 
 
 
-\subsubsection{Removing colors (using a gray scale)}
+\subsubsection{Removing colors (using a gray scale) (s124320)}
 Finally, we can try to remove some of the color information from the videos, to lower the bit rate. As usual, ffmpeg comes to the rescue, and it is done using the command \textit{ffmpeg -i ScaledInput.mov -crf 17 -vf hue=s=0 Output.mov}.
 
 Using this command on all the resolutions we generated in section \ref{subsubsec:resolution}, we get the following bit rates, shown in table \ref{tab:grayscale}.
@@ -160,23 +160,30 @@ Just for good measures sake, we can try and convert a few of the low resolution 
 
 As we see, we can shave off an additional 317Kb-64Kb off the bit rate, by transcoding to a gray scale.
 
-\subsubsection{Other methods}
+\subsubsection{Other methods (s103208)}
 One other method is to set the presets of the encoder to either a slower or faster preset. The slower the preset, the more CPU will be used to encode the video. The resulting encoded video, will be smaller than the same video encoded with a faster preset. This is of course presents itself as a trade-off between resources and video size, where resources is probably very limiting on a drone application, making a very slow preset, not very viable.
 
 
 
 
-\subsection{The Drone application in practice}
+\subsection{The Drone application in practice (s103208)}
 % Viser resultaterne og vurder hvor godt det er bla bla bla
+Even though there have been a lot of struggling getting the live streaming from the Android application to the server, it was actually possible to stream videos from sizes of 320x240 and up to 1920x108 with a quality set to 50 percent and 12 FPS. The figures below shows a big variaty of quality and just because the image is small and contains smaller bitrate, dosn't necessarily mean that it will look better when recieved. Subjectively the best image size for transfering from the Android application was the 1280x720. The quality was good and it wasn't lagging as much as the 1920x1080.\\
 
+
+The 320x240 video (Figure \ref{fig:320x240}) was the easiest video to stream but the quality wasn't at all good. Subjectively the image was useless.
 \Fig[0.6]{320x240}{Live streaming 320x240 compressed video with 50 percent quality and 12 fps}
 
+The 640x480 video (Figure \ref{fig:640x480}) did fail alot and caused the server to crash during to many errors. Also the quality wasn't the best.
 \Fig[0.6]{640x480}{Live streaming 640x480 compressed video with 50 percent quality and 12 fps}
 
+The 1024x680 video (Figure \ref{fig:1024x680}) is very good alternative to the 1280x720 video (which was the best) because the quality was good and stream came in smoothly enough to watch.
 \Fig[0.6]{1024x680}{Live streaming 1024x680 compressed video with 50 percent quality and 12 fps}
 
+The 1280x720 video (Figure \ref{fig:1280x720}) was definitely the best video for streaming because the quality was great and the frames came in smoothly. Though when streaming from a noisy room the video tend to fail - this is also mentioned earlier in this report and therefore not seen as a problem in this test.
 \Fig[0.6]{1280x720}{Live streaming 1280x720 compressed video with 50 percent quality and 12 fps}
 
+The 1920x1080 video (Figure \ref{fig:1920x1080}) did have a good quality but the result was affected by a alot of lagging and slow stream. If the connection and circumstances were better, the result may have been better.
 \Fig[0.6]{1920x1080}{Live streaming 1920x1080 compressed video with 50 percent quality and 12 fps}
 
 

@@ -110,6 +110,11 @@
     \input{Section/#1}
 }
 
+\newcommand{\SectionII}[2]{\
+    \section{#1}\label{sec:#2}
+    \input{Section/#2}
+}
+
 \newenvironment{subeq}{
     \subequations
         \align
